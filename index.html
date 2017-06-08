@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        function a() {
+            var x = $("#input_1").val().toString();
+            var c = $("#input_2").val();
+            var d = $("#input_3").val();
+            var i = $("#input_4").val();
+            if (c > 36) alert("Система исчиссления слишком большая");
+            var g = parseInt(x, i).toString(c)
+            $("#chisel").text(g);
+        }
+
+        function ha() {
+            var a = $("#input1").val();
+            var g =$("#input2").val()
+            var pos = a.indexOf(g);
+            var count = 0
+            while (pos !== -1) {
+                count++;
+                pos = a.indexOf(g, pos + 1);
+            }
+            $("#kol-vo").text(count)
+
+        }
+    </script>
+
+</head>
+
+<body>
+    <form name="Test">
+        <p><b>Введите число</b></p>
+        <input id="input_1" type="text" size="13" value="">
+        <b></b>
+        <p><b>В какой системе счисления</b></p>
+        <input id="input_4" type="text" size="13" value="">
+        <b></b>
+        <p><b>В какую систему переводить</b></p>
+        <input id="input_2" type="text" size="13" value="">
+        <p><b></b></p>
+        <input class="ga" id="go" type="button" size="5" onclick="a()">
+    </form>
+    <div id="chisel"></div>
+
+
+    <form name="bac">
+        <p><b>Введи текст</b></p>
+        <input id="input1" type="text" size="95" value="">
+        <p><b>Введи буквы для поиска</b></p>
+        <input id="input2" type="text" size="95" value="">
+        <p><b></b></p>
+        <input class="ga" id="go" type="button" size="5" onclick="ha()">
+    </form>
+    <div id="kol-vo"></div>
+    <div id="otvet"></div>
+    <!-- <div id="map" style="width: 600px; height: 400px"></div> -->
+
+</body>
+
+</html>
