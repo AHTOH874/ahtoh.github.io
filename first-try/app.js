@@ -27,7 +27,7 @@ window.onload = function () {
 };
 function preload() {
   // SPRITE
-  game.load.spritesheet('Tileset', 'assets/images/Tileset2.png', TILE_SIZE, TILE_SIZE);
+  game.load.spritesheet('Tileset', 'assets/images/tileset2.png', TILE_SIZE, TILE_SIZE);
 
   // JSON:
   game.load.json('TileMap', 'assets/images/TileMap2.json');
