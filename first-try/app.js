@@ -1,54 +1,169 @@
-"use strict";
-
-var levelDesign = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 'use strict';
 
 // CONSTS
 
 var SCREEN_WIDTH = 1280;
-var SCREEN_HEIGHT = 840;
+var SCREEN_HEIGHT = 720;
 var SCALE_FACTOR = 1;
 var TILE_SIZE = 32;
 var NUM_SCREEN_TILES_X = 24;
 var NUM_SCREEN_TILES_Y = 24;
 var NUM_TILES_X = 7;
 var NUM_TILES_Y = 5;
-var DEFAULT_SPEED = 1;
+var DEFAULT_SPEED = 32;
+
+// CONST FRAME`s
+var FRAME_STEP = 5;
+var FRAME_PLAYER = 2;
 
 var game;
+
 window.onload = function () {
-  game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT, Phaser.CANVAS, 'gameDiv', {
-    preload: preload,
-    create: create,
-    render: render
-  });
+  game = new Phaser.Game(SCREEN_WIDTH, SCREEN_HEIGHT, Phaser.CANVAS, 'gameDiv');
+  game.state.add('boot', bs);
   game.state.add('game', gs);
   //	game.state.add('menu', menuState);
+  game.state.start('boot');
 };
-function preload() {
-  // SPRITE
-  game.load.spritesheet('Tileset', 'assets/images/tileset2.png', TILE_SIZE, TILE_SIZE);
+"use strict";
 
-  // JSON:
-  game.load.json('TileMap', 'assets/images/TileMap2.json');
-  game.time.advancedTiming = true;
+function PlayerCharacter() {
+  this.type = {
+    name: "Player",
+    niceName: "Player",
+    frame: FRAME_PLAYER,
+    movementSpeed: DEFAULT_SPEED * SCALE_FACTOR
+  };
+  //
+  this.tileIndex = {
+    x: 0,
+    y: 0
+    // GAMESTATS
+  };this.numDeaths = 0;
+  this.level = 1;
+  this.gameLevel = 1;
+  this.canMove = true;
+  this.isInField = false;
+  this.tempX, this.tempY;
+  // Push player character to characterList:
+  //
+  //this.createPlayer();
+  //this.onKeyPress();
+  gs.pc = this;
 }
 
+PlayerCharacter.prototype.createPlayer = function () {
+  this.sprite = gs.createTileSprite(this.tileIndex.x * TILE_SIZE * SCALE_FACTOR + SCALE_FACTOR * 16, this.tileIndex.y * TILE_SIZE * SCALE_FACTOR + SCALE_FACTOR * 16, 'Tileset', this.type.frame);
+  this.sprite.anchor.setTo(0.5);
+  this.sprite.visible = true;
+  this.sprite.z = 4;
+
+  this.sprite.scale.set(SCALE_FACTOR, SCALE_FACTOR);
+  game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
+  this.sprite.body.collideWorldBounds = true;
+  game.camera.follow(this.sprite);
+};
+
+PlayerCharacter.prototype.onKeyPress = function () {
+  gs.keys.left.onDown.add(function () {
+    this.sprite.angle -= 90;
+    if (this.isInField && this.tempX !== this.sprite.x && this.tempY !== this.sprite.y) {
+      this.createPoint();
+    }
+  }, this);
+  gs.keys.right.onDown.add(function () {
+    this.sprite.angle += 90;
+    if (this.isInField && this.tempX !== this.sprite.x && this.tempY !== this.sprite.y) {
+      this.createPoint();
+    }
+  }, this);
+};
+PlayerCharacter.prototype.move = function () {
+  if (gs.pc.sprite.angle == 0) {
+    gs.pc.sprite.y -= gs.pc.type.movementSpeed;
+  } else if (gs.pc.sprite.angle == 90) {
+    gs.pc.sprite.x += gs.pc.type.movementSpeed;
+  } else if (gs.pc.sprite.angle == -180) {
+    gs.pc.sprite.y += gs.pc.type.movementSpeed;
+  } else if (gs.pc.sprite.angle == -90) {
+    gs.pc.sprite.x -= gs.pc.type.movementSpeed;
+  }
+};
+
+// MAKE STEP
+// *******************************************************************************************************
+PlayerCharacter.prototype.makeStep = function () {
+  if (!this.isInField) {
+    console.log(this.sprite.angle);
+    this.createPoint();
+  }
+  this.isInField = true;
+  if (gs.stepsGroup) {
+    var step = gs.createTileSprite(this.sprite.x, this.sprite.y, 'Tileset', FRAME_STEP);
+    step.anchor.setTo(0.5);
+    step.visible = true;
+    step.scale.set(SCALE_FACTOR, SCALE_FACTOR);
+    gs.stepsGroup.add(step);
+  } else {
+    gs.stepsGroup = game.add.group();
+    var _step = gs.createTileSprite(this.sprite.x, this.sprite.y, 'Tileset', FRAME_STEP);
+    _step.anchor.setTo(0.5);
+    _step.visible = true;
+    _step.scale.set(SCALE_FACTOR, SCALE_FACTOR);
+    gs.stepsGroup.add(_step);
+  }
+};
+PlayerCharacter.prototype.createPoint = function () {
+  if (this.sprite) {
+    if (gs.pc.sprite.angle == 0) {
+      gs.polygonForPaint.points.push(this.sprite.x + 16);
+      gs.polygonForPaint.points.push(this.sprite.y + 16);
+    } else if (gs.pc.sprite.angle == 90) {
+      gs.polygonForPaint.points.push(this.sprite.x - 16);
+      gs.polygonForPaint.points.push(this.sprite.y - 16);
+    } else if (gs.pc.sprite.angle == -180) {
+      gs.polygonForPaint.points.push(this.sprite.x - 16);
+      gs.polygonForPaint.points.push(this.sprite.y + 16);
+    } else if (gs.pc.sprite.angle == -90) {
+      gs.polygonForPaint.points.push(this.sprite.x + 16);
+      gs.polygonForPaint.points.push(this.sprite.y + 16);
+    }
+  }
+};
+'use strict';
+
+// BOOT STATE
+//******************************************************************************
+
+var bs = {
+  preload: function preload() {
+    // SPRITE
+    game.load.spritesheet('Tileset', 'assets/images/tileset2.png', TILE_SIZE, TILE_SIZE);
+    game.load.tilemap('level3', 'assets/images/TileMap2.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.image('tileset2', 'assets/images/tileset2.png', TILE_SIZE, TILE_SIZE);
+    game.load.json('level3JSON', 'assets/images/TileMap2.json');
+    // JSON:
+
+    game.time.advancedTiming = true;
+  },
+
+  create: function create() {
+    //game.stage.backgroundColor = '#182d3b';
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    //	You can listen for each of these events from Phaser.Loader
+    game.load.onLoadStart.add(loadStart, this);
+    game.load.onFileComplete.add(fileComplete, this);
+    game.load.onLoadComplete.add(loadComplete, this);
+    //	Progress report
+    text = game.add.text(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, '', { fill: '#ffffff' });
+
+    game.load.start();
+  },
+  render: function render() {}
+
+};
 var text;
-
-function create() {
-  game.stage.backgroundColor = '#182d3b';
-
-  //	You can listen for each of these events from Phaser.Loader
-  game.load.onLoadStart.add(loadStart, this);
-  game.load.onFileComplete.add(fileComplete, this);
-  game.load.onLoadComplete.add(loadComplete, this);
-  //	Progress report
-  text = game.add.text(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, '', { fill: '#ffffff' });
-
-  game.load.start();
-}
-
 function start() {}
 
 function loadStart() {
@@ -63,132 +178,118 @@ function fileComplete(progress, cacheKey, success, totalLoaded, totalFiles) {
 
 function loadComplete() {
   text.setText("Load Complete");
-
-  // // White Tileset:
-  // gs.whiteTileset = game.add.bitmapData(game.cache.getImage('Tileset').width, game.cache.getImage('Tileset').height);
-  // gs.whiteTileset.draw(game.cache.getImage('Tileset'));
-  // gs.whiteTileset.update();
-  // gs.whiteTileset.processPixelRGB(function (pixel) {
-  // 	if (pixel.a > 0 || pixel.g > 0 || pixel.b > 0 || pixel.r > 0) {
-  // 		pixel.r = 255;
-  // 		pixel.g = 255;
-  // 		pixel.b = 255;
-  // 		pixel.a = 255;
-  // 		return pixel;
-  // 	}
-  //
-  // 	return false;
-  // }, this);
-  //
-  // game.cache.addSpriteSheet('WhiteTileset', null, gs.whiteTileset.canvas, 20, 20);
-
   game.state.start('game');
 }
-var a = 0;
+'use strict';
+
 // GAME_STATE
 //******************************************************************************
+var a = 0;
 var gs = {
-  pc: null,
-  map: null,
+  polygonForPaint: {
+    points: []
+  },
+
   preload: function preload() {
     //CREATE_GROUPS
     //CREATE_GROUPS
     //CREATE_GROUPS
     this.tileMapSpritesGroup = game.add.group();
+    this.tileMapStartGroup = game.add.group();
+    //this.stepsGroup = game.add.group();
+    var b = game.cache.getJSON("level3JSON");
 
     gs.createKeys();
     //this.createMapFromArray(levelDesign);
   },
   create: function create() {
-    this.loadTileMap("TileMap");
-    game.physics.startSystem(Phaser.Physics.ARCADE);
+    //this.generateMap("level3", 'tileset2', "level3JSON");
     this.pc = new PlayerCharacter();
+
+    this.map = game.add.tilemap('level3');
+    this.map.addTilesetImage('tileset2');
+    this.map.setCollision([1, 5]);
+
+    this.layer = this.map.createLayer(0);
+    this.layer.resizeWorld();
+    this.map.setTileIndexCallback(5, this.pc.makeStep, this.pc, this.layer);
+    this.map.setTileIndexCallback(1, this.prepareToPolygon, this);
+
     this.pc.createPlayer();
     this.pc.onKeyPress();
-    console.log("Создал игрока");
+
+    //this.loadTileMap("level3JSON");
   },
   update: function update() {
     a++;
-    if (a == 60) {
+    if (a == 80) {
       a = 0;
-      if (gs.pc.sprite.angle == 0) {
-        gs.pc.sprite.x += 32;
-      } else if (gs.pc.sprite.angle == 90) {
-        gs.pc.sprite.y += 32;
-      } else if (gs.pc.sprite.angle == -180) {
-        gs.pc.sprite.x -= 32;
-      } else if (gs.pc.sprite.angle == -90) {
-        gs.pc.sprite.y -= 32;
-      }
+      game.physics.arcade.collide(this.pc.sprite, this.layer);
+      gs.pc.move();
     }
-    //console.log(a);
+
+    gs.pc.tileIndex.x = gs.pc.sprite.x;
+    gs.pc.tileIndex.y = gs.pc.sprite.y;
+  },
+  render: function render() {
+    if (this.polygon) {
+      game.debug.geom(this.polygon);
+      game.debug.rectangle(this.polygon);
+    }
+    //game.debug.pixel(this.pc.sprite.x, this.pc.sprite.y, 'rgb(255,255,255)', 6);
+    //game.debug.pixel(this.pc.sprite.x + 16, this.pc.sprite.y, 'rgb(0,255,255)', 6);
+    //game.debug.pixel(this.pc.sprite.x, this.pc.sprite.y + 16, 'rgb(255,255,0)', 6);
+
+    //for (var i = 0; i < this.polygonForPaint.points.length; i += 2) {
+      //game.debug.pixel(this.polygonForPaint.points[i] - 3, this.polygonForPaint.points[i + 1] - 3, 'rgb(0,255,0)', 6);
+    //}
   }
-  // MAP_GENERATION:
-  // ************************************************************************************************
-};gs.generateMap = function (levelDesign) {
-  this.mapGroup = game.add.group();
+  //console.log(a);
+
+  // CREATE_KEYS
+  //****************************************************************************************************
+};gs.createKeys = function () {
+
+  this.keys = {
+    left: game.input.keyboard.addKey(Phaser.Keyboard.LEFT),
+    right: game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
+  };
 };
 
-// CREATE_CLEAR_MAP:
+//  Создание полигона
+//*******************************************************************************
+
+//  Подготовка к созданию полигона
+//*******************************************************************************
+gs.prepareToPolygon = function () {
+  if (this.pc.isInField) {
+    console.log(this.pc.sprite.angle);
+    this.pc.createPoint();
+  }
+  this.pc.isInField = false;
+  this.graphics = game.add.graphics(0, 0);
+
+  this.graphics.beginFill(0xebdb00);
+  this.graphics.drawPolygon(gs.polygonForPaint.points);
+  this.graphics.endFill();
+};
+'use strict';
+
+// MAP_GENERATION:
 // ************************************************************************************************
-gs.createClearMap = function () {
-  var x,
-      y,
+gs.generateMap = function (level, sprite, JSONfile) {
 
+  //  Start with a small layer only 400x200 and increase it by 100px
+  //  each time we click
+  console.log(gs.pc);
 
-  // Create empty map:
-  tileMap = [];
-  for (x = 0; x < this.numTilesX; x += 1) {
-    tileMap[x] = [];
-    for (y = 0; y < this.numTilesY; y += 1) {
-      tileMap[x][y] = {
-        explored: false,
-        visible: true,
-        character: null,
-        frame: null,
-        item: null,
-        effect: null,
-        object: null,
-        isClosed: false,
-        tileIndex: {
-          x: x,
-          y: y
-        }
-      };
-    }
-  }
+  //  this.layer.scale.set(SCALE_FACTOR);
 
-  this.dropWallList = [];
-  return tileMap;
+  //this.layer.resizeWorld();
 };
-
-gs.createMapFromArray = function (array) {
-  var x, y;
-
-  this.tileMapSprites = [];
-  for (x = 0; x < NUM_SCREEN_TILES_X; x += 1) {
-    this.tileMapSprites[x] = [];
-    for (y = 0; y < NUM_SCREEN_TILES_Y; y += 1) {
-      this.tileMapSprites[x][y] = gs.createTileSprite(x * TILE_SIZE, y * TILE_SIZE, 'Tileset', array[x][y], this.tileMapSpritesGroup);
-      this.tileMapSprites[x][y].anchor.x = 0.5;
-      this.tileMapSprites[x][y].anchor.y = 0.5;
-      this.tileMapSprites[x][y].scale.setTo(SCALE_FACTOR, SCALE_FACTOR);
-      this.tileMapSprites[x][y].visible = true;
-      this.tileMapSprites[x][y].tileIndex = {
-        x: x,
-        y: y
-      };
-    }
-  }
-};
-
-// LOAD_TILE_MAP:
-// Load a tileMap from a static .JSON file
-// This function will return a tileTypeMap of the internal file format
-// This tileTypeMap is the same internal format as the game saves to and can then be passed to createTileMap to be created
-// So the purpose of this function is simply to convert the static .JSON files produced by Tiled into our internal format
-// It does not actually do any loading itself.
+// LOAD_TILE_MAP
 // ************************************************************************************************
+
 gs.loadTileMap = function (fileName) {
   var tileTypeMap, data, x, y, i, object, frame, area, numTilesX, numTilesY;
 
@@ -204,9 +305,7 @@ gs.loadTileMap = function (fileName) {
   for (x = 0; x < numTilesX; x += 1) {
     tileTypeMap[x] = [];
     for (y = 0; y < numTilesY; y += 1) {
-      tileTypeMap[x][y] = {
-        frame: null
-      };
+      tileTypeMap[x][y] = new Phaser.Tile();
     }
   }
 
@@ -215,6 +314,10 @@ gs.loadTileMap = function (fileName) {
     for (x = 0; x < numTilesX; x += 1) {
       frame = data.layers[0].data[y * numTilesX + x] - 1;
       tileTypeMap[x][y].frame = frame;
+      if (frame == 0) {
+        tileTypeMap[x][y].isStartTile = true;
+        tileTypeMap[x][y].tileSprite = gs.createTileSprite(x * TILE_SIZE, y * TILE_SIZE, 'Tileset', tileTypeMap[x][y].frame, this.tileMapStartGroup);
+      }
       tileTypeMap[x][y].tileSprite = gs.createTileSprite(x * TILE_SIZE, y * TILE_SIZE, 'Tileset', tileTypeMap[x][y].frame, this.tileMapSpritesGroup);
       tileTypeMap[x][y].tileSprite.scale.setTo(SCALE_FACTOR, SCALE_FACTOR);
       tileTypeMap[x][y].tileSprite.visible = true;
@@ -228,22 +331,7 @@ gs.loadTileMap = function (fileName) {
   this.map = tileTypeMap;
 };
 
-// CREATE_KEYS
-// *****************************************************************************
-
-gs.createKeys = function () {
-
-  this.keys = {
-    left: game.input.keyboard.addKey(Phaser.Keyboard.LEFT),
-    right: game.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
-  };
-};
-
-function render() {
-  game.debug.text(game.time.fps, 2, 14, "#00ff00");
-
-  this.game.debug.cameraInfo(this.game.camera, 32, 32);
-}
+var levelDesign = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 0, 1, 1, 1, 0, 0, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 'use strict';
 
 gs.forEachType = function (types, func) {
@@ -476,45 +564,16 @@ gs.randSubset = function (list, size) {
 gs.randomColor = function () {
   return 'rgb(' + game.rnd.integerInRange(0, 255) + ',' + game.rnd.integerInRange(0, 255) + ',' + game.rnd.integerInRange(0, 255) + ')';
 };
-"use strict";
 
-function PlayerCharacter() {
-  this.type = {
-    name: "Player",
-    niceName: "Player",
-    frame: 2,
-    movementSpeed: DEFAULT_SPEED * TILE_SIZE,
-    tileIndex: {
-      x: 8,
-      y: 5
-    }
-  };
-  //
+// UNIQUE
+//*******************************************************************************
+gs.unique = function (arr) {
 
-  // GAMESTATS
-  this.numDeaths = 0;
-  this.level = 1;
-  this.gameLevel = 1;
+  var obj = {};
 
-  // Push player character to characterList:
-  gs.pc = this;
-}
-
-PlayerCharacter.prototype.createPlayer = function () {
-  this.sprite = gs.createTileSprite(this.type.tileIndex.x * TILE_SIZE + 16, this.type.tileIndex.y * TILE_SIZE + 16, 'Tileset', this.type.frame);
-  this.sprite.anchor.x = 0.5;
-  this.sprite.anchor.y = 0.5;
-  this.sprite.visible = true;
-  game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
-};
-
-PlayerCharacter.prototype.onKeyPress = function (keyCode) {
-  gs.keys.left.onDown.add(function () {
-    this.sprite.angle -= 90;
-    //console.log(this.sprite.angle)
-  }, this);
-  gs.keys.right.onDown.add(function () {
-    this.sprite.angle += 90;
-    //console.log(this.sprite.angle)
-  }, this);
+  for (var i = 0; i < arr.length; i++) {
+    var str = arr[i];
+    obj[str] = true; // запомнить строку в виде свойства объекта
+  }
+  return Object.keys(obj); // или собрать ключи перебором для IE8-
 };
