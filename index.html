@@ -58,7 +58,129 @@
     <div id="kol-vo"></div>
     <div id="otvet"></div>
     <!-- <div id="map" style="width: 600px; height: 400px"></div> -->
+<script language="JavaScript1.2">
 
+function doCalc(flagA)
+{
+   Rels = new Array(1,8,8192,8388608,8589934592,8796093022208);
+   for (i=0;i<Rels.length;i++)
+   {
+        if (i==flagA)
+        {
+            givenValue=document.getElementById(flagA).value.replace(",",".");
+            newVal=eval(givenValue*Rels[i])
+            document.getElementById("0").value=newVal;
+        }
+   }
+   for (i=1;i<Rels.length;i++)
+   {
+        newVal=eval(document.getElementById("0").value/Rels[i]);
+        neg=0;
+        if (newVal < 0)
+        {
+            newVal*=-1;
+            neg=1;
+        }
+        j=0;
+        while (newVal<1 && newVal>0)
+        {
+               j++;
+               newVal*=10;
+        }
+        newVal*=100000;
+        newVal=Math.round(newVal);
+        newVal/=100000;
+        newVal/=Math.pow(10,j);
+        newVal="a"+newVal;
+        cache=0;
+        if (newVal.indexOf("e") != -1)
+        {
+            cache=newVal.substr(newVal.indexOf("e"),5);
+            newVal=newVal.substring(0,newVal.indexOf("e"));
+        }
+        dig=new Array;
+        for (j=1;j<5;j++)
+            dig[j]=newVal.substr(newVal.length-j-1,1);
+        if (dig[1] == 9 && dig[2] == 9 && dig[3] == 9 && dig[4] == 9)
+           {
+                rest=newVal.substring(newVal.indexOf("."),100).length-1;
+                newVal=newVal.substring(1,newVal.length-1);
+                newVal="a"+eval(eval(newVal)+Math.pow(10,-rest+2));
+            }
+       for (j=1;j<5;j++)
+             dig[j]=newVal.substr(newVal.length-j-1,1);
+       if (dig[1] == 0 && dig[2] == 0 && dig[3] == 0 && dig[4] == 0)
+             {
+                 check=0;
+                 for (j=0;j<newVal.length-5;j++)
+                 {
+                      if (newVal.substr(j,1)!=0)
+                          check++;
+                 }
+                 if (check>2)
+                     newVal=newVal.substring(0,newVal.length-1);
+             }
+        if (cache)
+            newVal=newVal+cache;
+        newVal=newVal.substring(1,newVal.length);
+        if (neg)
+            newVal*=-1;
+        document.getElementById(i).value=eval(newVal);
+   }
+}
+// end Conversion: bits and bytes -->
+</script>
+
+<h2></h2>
+
+
+<form name="flagA">
+  <table align="center" border="0" cellpadding="1" cellspacing="0"> 
+    <tbody><tr>
+      <td align="right"><font size="2">bit (b):</font></td>
+      <td>
+          <input id="0" size="20" onchange="doCalc(0)" value="" style="background-color: #FFFFFF"> Example: 5452595200
+      </td>
+    </tr>
+    <tr>
+      <td align="right"><font size="2">byte (B):</font></td>
+      <td>
+          <input id="1" size="20" onchange="doCalc(1)" value="" style="background-color: #FFFFFF"> Example: 685000000
+      </td>
+    </tr>
+    <tr>
+      <td align="right"><font size="2">kilobyte (kB):</font></td>
+      <td>
+          <input id="2" size="20" onchange="doCalc(2)" value="" style="background-color: #FFFFFF"> Example: 650000
+      </td>
+    </tr>
+    <tr>
+      <td align="right"><font size="2">megabyte (MB):</font></td>
+      <td>
+          <input id="3" size="20" onchange="doCalc(3)" value="" style="background-color: #FFFFFF"> Example: 650
+      </td>
+    </tr>
+    <tr>
+      <td align="right"><font size="2">gigabyte (GB):</font></td>
+      <td>
+          <input id="4" size="20" onchange="doCalc(4)" value="" style="background-color: #FFFFFF">
+      </td>
+    </tr>
+    <tr>
+      <td align="right"><font size="2">terabyte (TB):</font></td>
+      <td>
+          <input id="5" size="20" onchange="doCalc(5)" value="" style="background-color: #FFFFFF">
+      </td>
+    </tr>
+	<tr>
+	  <td colspan="2" align="right" valign="center">
+<hr>
+<b>"Рассчитать"</b> <input value="Рассчитать" type="button"> <input value="delete " type="reset" ><br>
+
+	 </td>
+	</tr>
+  </tbody></table>
+</form>
 </body>
 
 </html>
