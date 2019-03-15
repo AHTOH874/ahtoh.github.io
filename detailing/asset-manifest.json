@@ -1,15 +1,15 @@
 {
-  "main.css": "/detailing/static/css/main.a436459f.chunk.css",
-  "main.js": "/detailing/static/js/main.e48e1d85.chunk.js",
-  "static/js/1.195b0220.chunk.js": "/detailing/static/js/1.195b0220.chunk.js",
+  "main.css": "/detailing/static/css/main.63d3a4e1.chunk.css",
+  "main.js": "/detailing/static/js/main.f28727e5.chunk.js",
+  "static/js/1.6c07c08b.chunk.js": "/detailing/static/js/1.6c07c08b.chunk.js",
   "runtime~main.js": "/detailing/static/js/runtime~main.9ef93c94.js",
-  "static/media/fonts.css": "/detailing/static/media/DIN-Next-W10-Light.ec19c194.woff",
+  "static/media/fonts.css": "/detailing/static/media/DIN-Next-W02-Light.4a4bf0fe.woff",
   "static/media/paint1.jpg": "/detailing/static/media/paint1.2ac0f858.jpg",
   "static/media/pic1.jpg": "/detailing/static/media/pic1.6f22dcca.jpg",
   "static/media/logo2.png": "/detailing/static/media/logo2.a195523c.png",
   "static/media/serviceMain.jpg": "/detailing/static/media/serviceMain.25abe742.jpg",
   "static/media/logo.png": "/detailing/static/media/logo.19d45880.png",
   "index.html": "/detailing/index.html",
-  "precache-manifest.da4635592a3163eab399541a65fc35ab.js": "/detailing/precache-manifest.da4635592a3163eab399541a65fc35ab.js",
+  "precache-manifest.17b3f765e8150017a60cb85f6a8b94f2.js": "/detailing/precache-manifest.17b3f765e8150017a60cb85f6a8b94f2.js",
   "service-worker.js": "/detailing/service-worker.js"
 }

@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+Host: https://ct58.ru
+Sitemap: https://ct58.ru/sitemap.xml
