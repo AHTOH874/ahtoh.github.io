@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/hacktoonn/static/css/main.5f496f61.chunk.css",
-    "main.js": "/hacktoonn/static/js/main.bf298b3a.chunk.js",
-    "main.js.map": "/hacktoonn/static/js/main.bf298b3a.chunk.js.map",
-    "runtime-main.js": "/hacktoonn/static/js/runtime-main.b288610d.js",
-    "runtime-main.js.map": "/hacktoonn/static/js/runtime-main.b288610d.js.map",
-    "static/js/2.152fdc19.chunk.js": "/hacktoonn/static/js/2.152fdc19.chunk.js",
-    "static/js/2.152fdc19.chunk.js.map": "/hacktoonn/static/js/2.152fdc19.chunk.js.map",
-    "index.html": "/hacktoonn/index.html",
-    "precache-manifest.fce587c91a809080932bc5651d4d6a30.js": "/hacktoonn/precache-manifest.fce587c91a809080932bc5651d4d6a30.js",
-    "service-worker.js": "/hacktoonn/service-worker.js",
-    "static/css/main.5f496f61.chunk.css.map": "/hacktoonn/static/css/main.5f496f61.chunk.css.map"
+    "main.css": "/hacktoon/static/css/main.5f496f61.chunk.css",
+    "main.js": "/hacktoon/static/js/main.55893672.chunk.js",
+    "main.js.map": "/hacktoon/static/js/main.55893672.chunk.js.map",
+    "runtime-main.js": "/hacktoon/static/js/runtime-main.a11a5a39.js",
+    "runtime-main.js.map": "/hacktoon/static/js/runtime-main.a11a5a39.js.map",
+    "static/js/2.afccf32b.chunk.js": "/hacktoon/static/js/2.afccf32b.chunk.js",
+    "static/js/2.afccf32b.chunk.js.map": "/hacktoon/static/js/2.afccf32b.chunk.js.map",
+    "index.html": "/hacktoon/index.html",
+    "precache-manifest.8bf2d9d1f6a7ceac2d7545199784da6c.js": "/hacktoon/precache-manifest.8bf2d9d1f6a7ceac2d7545199784da6c.js",
+    "service-worker.js": "/hacktoon/service-worker.js",
+    "static/css/main.5f496f61.chunk.css.map": "/hacktoon/static/css/main.5f496f61.chunk.css.map"
   }
 }
