@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/hacktoonn/static/css/main.5f496f61.chunk.css",
+    "main.js": "/hacktoonn/static/js/main.bf298b3a.chunk.js",
+    "main.js.map": "/hacktoonn/static/js/main.bf298b3a.chunk.js.map",
+    "runtime-main.js": "/hacktoonn/static/js/runtime-main.b288610d.js",
+    "runtime-main.js.map": "/hacktoonn/static/js/runtime-main.b288610d.js.map",
+    "static/js/2.152fdc19.chunk.js": "/hacktoonn/static/js/2.152fdc19.chunk.js",
+    "static/js/2.152fdc19.chunk.js.map": "/hacktoonn/static/js/2.152fdc19.chunk.js.map",
+    "index.html": "/hacktoonn/index.html",
+    "precache-manifest.fce587c91a809080932bc5651d4d6a30.js": "/hacktoonn/precache-manifest.fce587c91a809080932bc5651d4d6a30.js",
+    "service-worker.js": "/hacktoonn/service-worker.js",
+    "static/css/main.5f496f61.chunk.css.map": "/hacktoonn/static/css/main.5f496f61.chunk.css.map"
+  }
+}
